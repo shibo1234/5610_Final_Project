@@ -26,18 +26,16 @@ function App() {
             <FaBook /> Rules
           </button>
         </Link>
-        <Link to="/scores">
+        <Link to="/high-scores">
           <button className="scores-button">
             <FaTrophy /> High Scores
           </button>
         </Link>
 
-        <img src={myImage} ></img>
+        <img src={myImage}></img>
       </div>
     </div>
   );
 }
 
 export default App;
-
-
