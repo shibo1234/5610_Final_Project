@@ -1,6 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const session = require("cookie-session");
+const session = require("express-session");
 const cors = require("cors");
 require("dotenv").config();
 
@@ -11,7 +11,14 @@ const gameRoutes = require("./routes/game");
 const app = express();
 app.use(express.json());
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
-app.use(session({}));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false }, // TODO: Unsure to update this to true if deploying with HTTPS
+  })
+);
 
 app.use("/api", authRoutes);
 app.use("/api/gamesRank", gamesRankRoutes);
