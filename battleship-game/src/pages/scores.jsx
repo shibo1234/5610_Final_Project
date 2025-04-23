@@ -10,7 +10,7 @@ function HighScoresPage() {
   useEffect(() => {
     async function loadScores() {
       try {
-        const res = await fetch("http://localhost:3001/api/games/scores", {
+        const res = await fetch("http://localhost:3001/api/gamesRank/rank", {
           credentials: "include",
         });
         if (!res.ok) throw new Error("Failed to fetch scores");
