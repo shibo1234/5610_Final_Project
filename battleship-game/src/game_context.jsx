@@ -106,10 +106,25 @@ const GameProvider = ({ children }) => {
     setAiShipsDestroyed(0);
   };
 
-  if (gameOver) {
-    const playerScore = elapsedTime > 0 ? 100000 / elapsedTime : 0;
-    updateHighScores("Player", Math.floor(playerScore));
-  }
+  useEffect(() => {
+    if (!gameOver || !currentUser) return;
+
+    const didWin = aiShipsDestroyed === SHIPS_SIZES.length;
+    const endpoint = didWin ? "win" : "loss";
+
+    fetch(`http://localhost:3001/api/games/${currentUser.id}/${endpoint}`, {
+      method: "PATCH",
+      credentials: "include",
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.json();
+      })
+      .then(({ wins, losses }) => {
+        setCurrentUser((u) => ({ ...u, wins, losses }));
+      })
+      .catch((err) => console.error("Failed to record game:", err));
+  }, [gameOver]);
 
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);

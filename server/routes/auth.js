@@ -19,15 +19,13 @@ router.post("/register", async (req, res) => {
   }
 });
 
-
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
   try {
-      const user = await User.findOne({ username });
-      if (!user || !(await user.comparePassword(password))) {
-        return res.status(400).send("Invalid credentials.");
-      }
-      
+    const user = await User.findOne({ username });
+    if (!user || !(await user.comparePassword(password))) {
+      return res.status(400).send("Invalid credentials.");
+    }
 
     req.session.user = { id: user._id, username: user.username };
     res.json(req.session.user);
@@ -35,7 +33,6 @@ router.post("/login", async (req, res) => {
     res.status(500).send("Login failed.");
   }
 });
-
 
 router.post("/logout", (req, res) => {
   req.session = null;
