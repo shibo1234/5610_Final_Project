@@ -33,4 +33,8 @@ mongoose.connect(process.env.MONGO_URL)
     console.log("✅ MongoDB connected");
     app.listen(3001, () => console.log("Server running on http://localhost:3001"));
   })
-  .catch(err => console.error(" MongoDB connection error:", err));
+    .catch(err => console.error(" MongoDB connection error:", err));
+  
+
+const gameRoutes = require("./routes/game");
+app.use("/api/games", gameRoutes);
