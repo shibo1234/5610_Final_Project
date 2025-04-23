@@ -1,12 +1,12 @@
 {
-  "homepage":"https://shibo1234.github.io/5610_project2/",
+  "homepage": "https://shibo1234.github.io/5610_project2/",
   "name": "battleship-game",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build", 
+    "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy": "npm run build",
@@ -28,6 +28,7 @@
     "eslint-plugin-react-refresh": "^0.4.19",
     "gh-pages": "^6.3.0",
     "globals": "^15.15.0",
+    "http-proxy": "^1.18.1",
     "vite": "^6.2.0"
   }
 }

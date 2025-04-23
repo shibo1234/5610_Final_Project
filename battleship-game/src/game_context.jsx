@@ -25,6 +25,14 @@ const GameProvider = ({ children }) => {
 
   const [currentUser, setCurrentUser] = useState(null);
 
+  // ── Multiplayer state ──────────────────────────────
+  const [game, setGame] = useState(null);
+  const [waiting, setWaiting] = useState(false);
+  const [myBoard, setMyBoard] = useState(null);
+  const [oppBoard, setOppBoard] = useState(null);
+  const [shareLink, setShareLink] = useState("");
+  const [error, setError] = useState(null);
+
   useEffect(() => {
     fetch("http://localhost:3001/api/me", {
       credentials: "include",
@@ -145,6 +153,52 @@ const GameProvider = ({ children }) => {
       2,
       "0"
     )}`;
+  };
+
+  // ── Multiplayer helpers ─────────────────────────────
+  const createGame = async () => {
+    setError(null);
+    try {
+      const res = await fetch("/api/games/new", {
+        method: "POST",
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const newGame = await res.json();
+      setGame(newGame);
+      setWaiting(true);
+      // assume server returned boards under player1/2.board
+      const you = newGame.player1.id === currentUser.id ? "player1" : "player2";
+      setMyBoard(newGame[you].board);
+      setOppBoard(null);
+      setShareLink(`${window.location.origin}/game/${newGame._id}`);
+      return newGame;
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    }
+  };
+
+  const joinGame = async (gameId) => {
+    setError(null);
+    try {
+      const res = await fetch(`/api/games/join/${gameId}`, {
+        method: "POST",
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const joined = await res.json();
+      setGame(joined);
+      setWaiting(false);
+      // figure out which side is you
+      const youIsP1 = joined.player1.id === currentUser.id;
+      setMyBoard(youIsP1 ? joined.player1.board : joined.player2.board);
+      setOppBoard(youIsP1 ? joined.player2.board : joined.player1.board);
+      return joined;
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    }
   };
 
   const placeShips = () => {
@@ -319,11 +373,20 @@ const GameProvider = ({ children }) => {
   };
 
   const logout = async () => {
-    setCurrentUser(null);
-    await fetch("http://localhost:3001/api/logout", {
-      method: "POST",
-      credentials: "include",
-    });
+    try {
+      const res = await fetch("http://localhost:3001/api/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+      if (!res.ok) {
+        console.error("Logout failed:", res.status);
+        return;
+      }
+      // only clear React state once the cookie is gone
+      setCurrentUser(null);
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
   };
 
   return (
@@ -362,7 +425,14 @@ const GameProvider = ({ children }) => {
         emptyBoard,
 
         currentUser,
-        login,
+        game,
+        waiting,
+        myBoard,
+        oppBoard,
+        shareLink,
+        error,
+        createGame,
+        joinGame,
         logout,
       }}
     >

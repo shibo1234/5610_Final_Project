@@ -1,5 +1,4 @@
 // src/pages/NewGame.jsx
-
 import React, { useContext, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { GameContext } from "../game_context";
@@ -22,7 +21,7 @@ export default function NewGame() {
   const { gameId } = useParams();
   const navigate = useNavigate();
 
-  // Kick off create or join
+  // create or join on mount
   useEffect(() => {
     if (!currentUser) {
       navigate("/login");
@@ -35,7 +34,6 @@ export default function NewGame() {
     }
   }, [currentUser, gameId]);
 
-  // Not logged in
   if (!currentUser) {
     return (
       <div className="newgame-container no-interaction">
@@ -46,7 +44,6 @@ export default function NewGame() {
     );
   }
 
-  // Error state
   if (error) {
     return (
       <div className="newgame-container">
@@ -55,7 +52,6 @@ export default function NewGame() {
     );
   }
 
-  // Still initializing
   if (!game) {
     return (
       <div className="newgame-container">
@@ -64,7 +60,6 @@ export default function NewGame() {
     );
   }
 
-  // Waiting for second player
   if (waiting) {
     return (
       <div className="newgame-container">
@@ -77,7 +72,7 @@ export default function NewGame() {
     );
   }
 
-  // Both players present (Active or Completed)
+  // both players are in
   const opponent =
     game.player1.id === currentUser.id ? game.player2 : game.player1;
 
@@ -89,11 +84,9 @@ export default function NewGame() {
           : `Playing vs ${opponent.username}`}
       </h2>
       <div className="game-boards">
-        {/* Opponent board: hide their ships */}
         {oppBoard && (
           <GameBoard board={oppBoard} hideShips className="board-opponent" />
         )}
-        {/* Your board: show your ships */}
         {myBoard && (
           <GameBoard
             board={myBoard}

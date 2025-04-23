@@ -36,8 +36,16 @@ router.post("/login", async (req, res) => {
 });
 
 router.post("/logout", (req, res) => {
-  req.session = null;
-  res.sendStatus(204);
+  // destroy the session on the server
+  req.session.destroy((err) => {
+    if (err) {
+      console.error("Session destruction error:", err);
+      return res.status(500).send("Logout failed");
+    }
+    // clear the cookie (default name is 'connect.sid')
+    res.clearCookie("connect.sid", { path: "/" });
+    return res.sendStatus(200);
+  });
 });
 
 router.get("/me", isAuthenticated, (req, res) => {
