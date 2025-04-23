@@ -18,24 +18,26 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMsg("handleSubmit called");
 
     try {
       const res = await fetch("http://localhost:3001/api/login", {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
 
       if (res.ok) {
-        const data = await res.json();
-        login(data); 
-        navigate("/"); 
+        const user = await res.json();
+        login(user);
+        navigate("/");
       } else {
-        const err = await res.text();
-        setErrorMsg(err || "Login failed.");
+        const text = await res.text();
+        setErrorMsg(text || "Invalid credentials.");
       }
     } catch (err) {
-      setErrorMsg("Server error.");
+      setErrorMsg("Server error. Please try again.");
     }
   };
 
