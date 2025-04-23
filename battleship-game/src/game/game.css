@@ -1,0 +1,145 @@
+.game-container {
+    text-align: center;
+    font-family: Arial, sans-serif;
+    background-color: #1e1e1e; 
+    color: white;
+    padding: 20px;
+    min-height: 100vh;
+}
+.game-boards {
+    display: flex; 
+    justify-content: center;
+    gap: 50px; 
+    margin-top: 20px;
+    margin-bottom: 40px;
+}
+
+.board-wrapper {
+    text-align: center;
+}
+
+h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+p {
+    font-size: 1.2rem;
+}
+
+button {
+    padding: 12px 24px; 
+    font-size: 1.2rem; 
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    min-width: 150px; 
+    text-align: center;
+}
+
+.start-button, .reset-button {
+    background-color: #007BFF;
+    color: white;
+}
+
+.start-button:hover, .reset-button:hover {
+    background-color: #0056b3;
+}
+
+.reset-button:disabled {
+    background-color: gray;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.back-button {
+    background-color: #ff3333;
+    color: white;
+}
+
+.back-button:hover {
+    background-color: #cc0000;
+}
+
+.buttons-container {
+    display: flex;
+    justify-content: center;
+    gap: 40px; 
+    margin-top: 20px;
+}
+
+@media (max-width: 600px) {
+    .game-boards {
+        flex-direction: column;
+        align-items: center;
+        gap: 30px;
+    }
+
+    .board {
+        grid-template-columns: repeat(10, 35px);
+    }
+
+    .cell {
+        width: 35px;
+        height: 35px;
+    }
+}
+
+.game-title{
+    position: sticky;
+}
+
+.game-over-message {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #ffcc00; 
+    text-align: center;
+    margin-top: 20px;
+    animation: fadeInScale 1s ease-in-out, bounce 1.5s infinite ease-in-out;
+}
+
+
+@keyframes fadeInScale {
+    0% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    50% {
+        opacity: 0.5;
+        transform: scale(1.1);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.scoreboard {
+    display: flex;
+    justify-content: center;
+    gap: 40px;  
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-top: 10px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.1); 
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+    .game-boards {
+        flex-direction: column;
+    }
+}
+
+

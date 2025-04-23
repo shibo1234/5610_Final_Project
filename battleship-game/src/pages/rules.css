@@ -1,0 +1,54 @@
+.rules-container {
+    text-align: center;
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background-color: #1e1e1e;
+    color: white;
+    min-height: 100vh;
+  }
+  
+  .navbar {
+    background: #333;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .nav-links {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .nav-links li {
+    display: inline;
+    margin: 0 15px;
+  }
+  
+  .nav-links a {
+    color: white;
+    text-decoration: none;
+  }
+  
+  .rules-list {
+    text-align: left;
+    max-width: 600px;
+    margin: 20px auto;
+  }
+  
+  .video-section {
+    margin-top: 20px;
+  }
+  
+  .btn-return {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #ff3333;
+    color: white;
+    border-radius: 5px;
+    text-decoration: none;
+    margin-top: 20px;
+  }
+  
+  .btn-return:hover {
+    background-color: #cc0000;
+  }
+  

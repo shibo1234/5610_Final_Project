@@ -1,0 +1,60 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1f1f1f;
+    padding: 12px 24px;
+    color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  }
+  
+  .nav-left a,
+  .nav-right a,
+  .nav-right button {
+    margin-left: 16px;
+    margin-right: 16px;
+    color: #61dafb;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  .nav-right {
+    display: flex;
+    align-items: center;
+  }
+  
+  .user-section span {
+    margin-right: 12px;
+    font-weight: bold;
+    color: white;
+  }
+  
+  .user-section button {
+    padding: 5px 10px;
+    border: 1px solid #61dafb;
+    background: transparent;
+    border-radius: 5px;
+    color: #61dafb;
+    cursor: pointer;
+  }
+  
+  .user-section button:hover {
+    background-color: #61dafb;
+    color: black;
+  }
+  
+  .auth-buttons a {
+    padding: 5px 10px;
+    margin-left: 10px;
+    border: 1px solid #61dafb;
+    border-radius: 5px;
+    color: #61dafb;
+    text-decoration: none;
+  }
+  
+  .auth-buttons a:hover {
+    background-color: #61dafb;
+    color: #1f1f1f;
+  }
+  

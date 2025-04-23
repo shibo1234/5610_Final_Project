@@ -1,0 +1,40 @@
+.scores-container {
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px; 
+}
+
+.navbar {
+    background: #333;
+    padding: 10px;
+    text-align: center;
+  }
+
+.scores-content {
+    width: 90%; 
+    max-width: 1000px;  
+    margin: 0 auto; 
+    padding: 20px;
+}
+
+
+.scores-table {
+    width: 80%;
+    margin: 20px auto;
+    border-collapse: collapse;
+}
+
+.scores-table th, .scores-table td {
+    border: 1px solid white;
+    padding: 10px;
+}
+
+.scores-table th {
+    background-color: #ff3333;
+}
+
+.scores-table tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.1);
+}
