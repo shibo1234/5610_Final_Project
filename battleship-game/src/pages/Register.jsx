@@ -6,19 +6,24 @@ export default function Register() {
   const { currentUser, login } = useContext(GameContext);
   const navigate = useNavigate();
 
-  const [form, setForm] = useState({ username: "", password: "", confirm: "" });
+  const [form, setForm] = useState({
+    username: "",
+    password: "",
+    confirm: "",
+  });
   const [error, setError] = useState("");
 
   useEffect(() => {
     if (currentUser) navigate("/");
   }, [currentUser, navigate]);
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const handleChange = (e) =>
+    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("handleSubmit called");
+
     if (form.password !== form.confirm) {
       return setError("Passwords do not match.");
     }
@@ -40,43 +45,44 @@ export default function Register() {
       }
 
       const user = await res.json();
-      console.log("User registered:", user);
-      login(user); 
+      login(user);
       navigate("/");
     } catch (err) {
       console.error("Registration error:", err);
-      setError("Server error.");
+      setError("Server error. Please try again.");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <div className="register-container">
       <h2>Register</h2>
-      <input
-        name="username"
-        placeholder="Username"
-        value={form.username}
-        onChange={handleChange}
-        required
-      />
-      <input
-        name="password"
-        type="password"
-        placeholder="Password"
-        value={form.password}
-        onChange={handleChange}
-        required
-      />
-      <input
-        name="confirm"
-        type="password"
-        placeholder="Confirm Password"
-        value={form.confirm}
-        onChange={handleChange}
-        required
-      />
-      <button type="submit">Register</button>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-    </form>
+      <form onSubmit={handleSubmit}>
+        <input
+          name="username"
+          placeholder="Username"
+          value={form.username}
+          onChange={handleChange}
+          required
+        />
+        <input
+          name="password"
+          type="password"
+          placeholder="Password"
+          value={form.password}
+          onChange={handleChange}
+          required
+        />
+        <input
+          name="confirm"
+          type="password"
+          placeholder="Confirm Password"
+          value={form.confirm}
+          onChange={handleChange}
+          required
+        />
+        <button type="submit">Register</button>
+        {error && <p className="error">{error}</p>}
+      </form>
+    </div>
   );
 }
