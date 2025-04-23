@@ -2,9 +2,9 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 
-// GET /api/games/scores
+// GET /api/games/rank
 // returns [{ username, wins, losses }, …] sorted
-router.get("/scores", async (req, res) => {
+router.get("/rank", async (req, res) => {
   try {
     const users = await User.find({}, "username wins losses")
       .sort({ wins: -1, losses: 1, username: 1 })
@@ -12,8 +12,8 @@ router.get("/scores", async (req, res) => {
 
     res.json(users);
   } catch (err) {
-    console.error("Error fetching scores:", err);
-    res.status(500).send("Could not load scores");
+    console.error("Error fetching rank:", err);
+    res.status(500).send("Could not load rank");
   }
 });
 
