@@ -1,5 +1,6 @@
 const express = require("express");
 const User = require("../models/User");
+const { isAuthenticated } = require("../middleware/auth");
 const router = express.Router();
 
 router.post("/register", async (req, res) => {
@@ -37,6 +38,10 @@ router.post("/login", async (req, res) => {
 router.post("/logout", (req, res) => {
   req.session = null;
   res.sendStatus(204);
+});
+
+router.get("/me", isAuthenticated, (req, res) => {
+  res.json(req.session.user);
 });
 
 module.exports = router;

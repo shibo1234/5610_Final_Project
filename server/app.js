@@ -16,6 +16,8 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+    maxAge: 24 * 60 * 60 * 1000,
+    sameSite: "none",
     cookie: { secure: false }, // TODO: Unsure to update this to true if deploying with HTTPS
   })
 );

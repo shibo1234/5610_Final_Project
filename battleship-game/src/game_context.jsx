@@ -26,6 +26,18 @@ const GameProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
+    fetch("http://localhost:3001/api/me", {
+      credentials: "include",
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("not authenticated");
+        return res.json();
+      })
+      .then((user) => setCurrentUser(user))
+      .catch(() => setCurrentUser(null));
+  }, []);
+
+  useEffect(() => {
     const savedGame = localStorage.getItem("battleshipGameState");
     if (savedGame) {
       const state = JSON.parse(savedGame);
