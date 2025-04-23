@@ -2,6 +2,21 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 
+// GET /api/games/scores
+// returns [{ username, wins, losses }, …] sorted
+router.get("/scores", async (req, res) => {
+  try {
+    const users = await User.find({}, "username wins losses")
+      .sort({ wins: -1, losses: 1, username: 1 })
+      .lean();
+
+    res.json(users);
+  } catch (err) {
+    console.error("Error fetching scores:", err);
+    res.status(500).send("Could not load scores");
+  }
+});
+
 // PATCH /api/games/:userId/win
 router.patch("/:userId/win", async (req, res) => {
   const user = await User.findById(req.params.userId);
