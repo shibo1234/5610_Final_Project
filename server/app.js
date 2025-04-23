@@ -5,7 +5,7 @@ const cors = require("cors");
 require("dotenv").config();
 
 const authRoutes = require("./routes/auth");
-const gameRoutes = require("./routes/games");
+const gamesRankRoutes = require("./routes/gamesRank");
 
 const app = express();
 app.use(express.json());
@@ -26,7 +26,7 @@ app.use(
 );
 
 app.use("/api", authRoutes);
-app.use("/api/games", gameRoutes);
+app.use("/api/gamesRank", gamesRankRoutes);
 
 mongoose
   .connect(process.env.MONGO_URL)
@@ -36,8 +36,7 @@ mongoose
       console.log("Server running on http://localhost:3001")
     );
   })
-    .catch(err => console.error(" MongoDB connection error:", err));
-  
+  .catch((err) => console.error(" MongoDB connection error:", err));
 
 const gameRoutes = require("./routes/game");
 app.use("/api/games", gameRoutes);
