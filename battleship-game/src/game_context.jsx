@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect } from "react";
 
 const GameContext = createContext();
-const API_BASE = "http://localhost:3001";
+const API_BASE = import.meta.env.VITE_API_BASE || "";
 
 const GameProvider = ({ children }) => {
   const GRID_SIZE = 10;
@@ -34,7 +34,7 @@ const GameProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:3001/api/me", {
+    fetch(`${API_BASE}/api/me`, {
       credentials: "include",
     })
       .then((res) => {
@@ -383,7 +383,7 @@ const GameProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      const res = await fetch("http://localhost:3001/api/logout", {
+      const res = await fetch(`${API_BASE}/api/logout`, {
         method: "POST",
         credentials: "include",
       });

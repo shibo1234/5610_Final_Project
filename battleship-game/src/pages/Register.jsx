@@ -22,14 +22,14 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("handleSubmit called");
+    setError("");
 
     if (form.password !== form.confirm) {
       return setError("Passwords do not match.");
     }
 
     try {
-      const res = await fetch("http://localhost:3001/api/register", {
+      const res = await fetch("/api/register", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

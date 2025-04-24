@@ -3,11 +3,7 @@ import "./board.css";
 import { GameContext } from "../game_context";
 
 function GameBoard({ isPlayer, board, resetGame }) {
-  const {
-    gameStarted,
-    playerTurn,
-    handleAttack, // grab it straight from context
-  } = useContext(GameContext);
+  const { gameStarted, playerTurn, handleAttack } = useContext(GameContext);
 
   const handleClick = (row, col) => {
     if (
