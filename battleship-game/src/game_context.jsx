@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect } from "react";
 
 const GameContext = createContext();
+const API_BASE = "http://localhost:3001";
 
 const GameProvider = ({ children }) => {
   const GRID_SIZE = 10;
@@ -23,10 +24,6 @@ const GameProvider = ({ children }) => {
   const [playerShipsDestroyed, setPlayerShipsDestroyed] = useState(0);
   const [aiShipsDestroyed, setAiShipsDestroyed] = useState(0);
 
-  const [currentUser, setCurrentUser] = useState(null);
-
-  const API_BASE = "http://localhost:3001";
-
   // ── Multiplayer state ──────────────────────────────
   const [game, setGame] = useState(null);
   const [waiting, setWaiting] = useState(false);
@@ -34,6 +31,7 @@ const GameProvider = ({ children }) => {
   const [oppBoard, setOppBoard] = useState(null);
   const [shareLink, setShareLink] = useState("");
   const [error, setError] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
     fetch("http://localhost:3001/api/me", {
@@ -158,6 +156,7 @@ const GameProvider = ({ children }) => {
   };
 
   // ── Multiplayer helpers ─────────────────────────────
+  // ── createGame ────────────────────────────────────
   const createGame = async () => {
     setError(null);
     try {
@@ -170,11 +169,12 @@ const GameProvider = ({ children }) => {
       setGame(newGame);
       setWaiting(true);
 
-      const youIsP1 = newGame.player1.id === currentUser.id;
-      setMyBoard(youIsP1 ? newGame.board1 : newGame.board2);
-
+      // server gave us board1
+      setMyBoard(newGame.board1);
       setOppBoard(null);
-      setShareLink(`${window.location.origin}/game/${newGame._id}`);
+
+      // HashRouter share-link
+      setShareLink(`${window.location.origin}/#/game/${newGame._id}`);
       return newGame;
     } catch (err) {
       setError(err.message);
@@ -182,6 +182,7 @@ const GameProvider = ({ children }) => {
     }
   };
 
+  // ── joinGame ──────────────────────────────────────
   const joinGame = async (gameId) => {
     setError(null);
     try {
@@ -190,18 +191,18 @@ const GameProvider = ({ children }) => {
         credentials: "include",
       });
       if (!res.ok) {
-        const errText = await res.text();
-        console.error("joinGame failed:", res.status, errText);
-        throw new Error(errText);
+        const txt = await res.text();
+        throw new Error(txt);
       }
-
       const joined = await res.json();
-
       setGame(joined);
+      setWaiting(false);
 
-      const youIsP1 = joined.player1.id === currentUser.id;
-      setMyBoard(youIsP1 ? joined.board1 : joined.board2);
-      setOppBoard(youIsP1 ? joined.board2 : joined.board1);
+      // server gave us both boards
+      const youAreP1 = joined.player1.id === currentUser.id;
+      setMyBoard(youAreP1 ? joined.board1 : joined.board2);
+      setOppBoard(youAreP1 ? joined.board2 : joined.board1);
+
       return joined;
     } catch (err) {
       setError(err.message);
