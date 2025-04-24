@@ -1,58 +1,96 @@
+// server/routes/games.js
 const express = require("express");
 const Game = require("../models/Game");
+const { isAuthenticated } = require("../middleware/auth");
 const router = express.Router();
 
-const { isAuthenticated } = require("../middleware/auth");
+const GRID_SIZE = 10;
+const SHIP_SIZES = [5, 4, 3, 3, 2];
 
+// helper to make a random 10×10 board with ships
+function generateBoard() {
+  const board = Array.from({ length: GRID_SIZE }, () =>
+    Array(GRID_SIZE).fill(null)
+  );
+  for (const size of SHIP_SIZES) {
+    let placed = false;
+    while (!placed) {
+      const r = Math.floor(Math.random() * GRID_SIZE);
+      const c = Math.floor(Math.random() * GRID_SIZE);
+      const dir = Math.random() < 0.5 ? "H" : "V";
 
+      // check collisions/bounds
+      let clash = false;
+      for (let i = 0; i < size; i++) {
+        const rr = dir === "H" ? r : r + i;
+        const cc = dir === "H" ? c + i : c;
+        if (rr >= GRID_SIZE || cc >= GRID_SIZE || board[rr][cc] !== null) {
+          clash = true;
+          break;
+        }
+      }
+      if (clash) continue;
 
-router.post("/new", async (req, res) => {
+      // place it
+      for (let i = 0; i < size; i++) {
+        const rr = dir === "H" ? r : r + i;
+        const cc = dir === "H" ? c + i : c;
+        board[rr][cc] = "S";
+      }
+      placed = true;
+    }
+  }
+  return board;
+}
+
+// Create a new game: generate Player1's board, leave board2 empty
+router.post("/new", isAuthenticated, async (req, res) => {
+  try {
     const user = req.session.user;
-    if (!user) return res.status(401).send("Unauthorized");
-  
-    try {
-      const newGame = new Game({
-        player1: {
-          id: user.id,
-          username: user.username
-        },
-        turn: "player1" 
-      });
-  
-      await newGame.save();
-      res.status(201).json(newGame);
-    } catch (err) {
-      console.error("Failed to create game:", err);
-      res.status(500).send("Could not create game.");
-    }
-  });
+    const board1 = generateBoard();
 
+    const newGame = new Game({
+      player1: { id: user.id, username: user.username },
+      board1,
+      board2: [], // until join
+      turn: "player1",
+      status: "Open",
+    });
 
+    await newGame.save();
+    res.status(201).json(newGame);
+  } catch (err) {
+    console.error("Failed to create game:", err);
+    res.status(500).send("Could not create game.");
+  }
+});
+
+// Join an existing game: generate Player2's board, activate
 router.post("/:gameId/join", isAuthenticated, async (req, res) => {
-    try {
-        const game = await Game.findById(req.params.gameId);
-        if (!game) return res.status(404).send("Game not found.");
-        if (game.player2 && game.player2.id) return res.status(400).send("Game already full.");
+  try {
+    const { gameId } = req.params;
+    const user = req.session.user;
 
-        const user = req.session.user;
+    // atomically add player2 + board2 + flip status
+    const updated = await Game.findByIdAndUpdate(
+      gameId,
+      {
+        player2: { id: user.id, username: user.username },
+        board2: generateBoard(),
+        status: "Active",
+        turn: "player1",
+      },
+      { new: true }
+    );
 
-            
-        const randomBoard = Array(10).fill(null).map(() => Array(10).fill(null)); 
-
-        game.player2 = {
-        id: user.id,
-        username: user.username,
-        };
-        game.board2 = randomBoard;
-        game.status = "Active";
-        game.turn = "player1";
-
-        await game.save();
-        res.status(200).json(game);
-    } catch (err) {
-      console.error(" Join game error:", err);
-      res.status(500).send("Failed to join game.");
+    if (!updated) {
+      return res.status(404).send("Game not found.");
     }
+    res.json(updated);
+  } catch (err) {
+    console.error("Join game error:", err);
+    res.status(500).send("Failed to join game.");
+  }
 });
 
 module.exports = router;
