@@ -12,14 +12,7 @@ export default function Navbar() {
     if (!currentUser) {
       return navigate("/login");
     }
-    try {
-      // createGame returns the new game object, including its _id
-      const newGame = await createGame();
-      navigate(`/game/${newGame._id}`);
-    } catch (err) {
-      console.error("Failed to create game:", err);
-      // you might also show a flash/toast here
-    }
+    navigate("/game");
   };
 
   const handleSignOut = async () => {

@@ -27,7 +27,9 @@ createRoot(document.getElementById("root")).render(
 
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/new-game" element={<NewGame />} />
+
+          <Route path="/game" element={<NewGame />} />
+          <Route path="/game/:gameId" element={<NewGame />} />
           <Route path="/games" element={<AllGames />} />
         </Routes>
       </HashRouter>

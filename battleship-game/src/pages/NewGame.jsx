@@ -21,20 +21,32 @@ export default function NewGame() {
   const { gameId } = useParams();
   const navigate = useNavigate();
 
-  // create or join on mount
   useEffect(() => {
-    if (!currentUser) {
+    // 1) Not logged in ⇒ send to login
+    if (currentUser === null) {
       navigate("/login");
       return;
     }
-    if (gameId) {
-      joinGame(gameId);
-    } else {
-      createGame();
-    }
-  }, [currentUser, gameId]);
 
-  if (!currentUser) {
+    // 2) No gameId and no game yet ⇒ create a new game
+    if (!gameId && !game) {
+      createGame().then((newGame) => {
+        // push the new ID into the URL without adding history entries
+        navigate(`/game/${newGame._id}`, { replace: true });
+      });
+      return;
+    }
+
+    // 3) gameId present and still no game ⇒ join that game
+    if (gameId && !game) {
+      joinGame(gameId).catch(() => {});
+    }
+  }, [currentUser, gameId, game, navigate, createGame, joinGame]);
+
+  // —————————————————————————————————————————————————————
+  // Render states
+
+  if (currentUser === null) {
     return (
       <div className="newgame-container no-interaction">
         <p>
@@ -72,7 +84,7 @@ export default function NewGame() {
     );
   }
 
-  // both players are in
+  // Both players are now in:
   const opponent =
     game.player1.id === currentUser.id ? game.player2 : game.player1;
 
