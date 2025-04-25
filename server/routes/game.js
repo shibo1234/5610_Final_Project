@@ -1,4 +1,3 @@
-// server/routes/games.js
 const express = require("express");
 const Game = require("../models/Game");
 const { isAuthenticated } = require("../middleware/auth");
@@ -7,7 +6,7 @@ const router = express.Router();
 const GRID_SIZE = 10;
 const SHIP_SIZES = [5, 4, 3, 3, 2];
 
-// helper to make a random 10×10 board with ships
+// helper to make a random 10×10 board with ships, sepate from the normal game logic
 function generateBoard() {
   const board = Array.from({ length: GRID_SIZE }, () =>
     Array(GRID_SIZE).fill(null)
@@ -19,7 +18,6 @@ function generateBoard() {
       const c = Math.floor(Math.random() * GRID_SIZE);
       const dir = Math.random() < 0.5 ? "H" : "V";
 
-      // check collisions/bounds
       let clash = false;
       for (let i = 0; i < size; i++) {
         const rr = dir === "H" ? r : r + i;
@@ -31,7 +29,6 @@ function generateBoard() {
       }
       if (clash) continue;
 
-      // place it
       for (let i = 0; i < size; i++) {
         const rr = dir === "H" ? r : r + i;
         const cc = dir === "H" ? c + i : c;
@@ -71,7 +68,6 @@ router.post("/:gameId/join", isAuthenticated, async (req, res) => {
     const { gameId } = req.params;
     const user = req.session.user;
 
-    // atomically add player2 + board2 + flip status
     const updated = await Game.findByIdAndUpdate(
       gameId,
       {
@@ -90,6 +86,16 @@ router.post("/:gameId/join", isAuthenticated, async (req, res) => {
   } catch (err) {
     console.error("Join game error:", err);
     res.status(500).send("Failed to join game.");
+  }
+});
+
+router.get("/", async (req, res) => {
+  try {
+    const games = await Game.find({}).sort({ createdAt: -1 }).lean();
+    res.json(games);
+  } catch (err) {
+    console.error("Error fetching all games:", err);
+    res.status(500).send("Could not load games");
   }
 });
 
