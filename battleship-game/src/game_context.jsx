@@ -434,6 +434,8 @@ const GameProvider = ({ children }) => {
         emptyBoard,
 
         currentUser,
+        login,
+        logout,
         game,
         waiting,
         myBoard,
@@ -442,7 +444,6 @@ const GameProvider = ({ children }) => {
         error,
         createGame,
         joinGame,
-        logout,
       }}
     >
       {children}

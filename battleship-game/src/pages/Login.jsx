@@ -37,7 +37,8 @@ export default function Login() {
         setErrorMsg(text || "Invalid credentials.");
       }
     } catch (err) {
-      setErrorMsg("Server error. Please try again.");
+      setError("Server error for Login. Please try again.");
+      console.error("Login/Register error:", err);
     }
   };
 
