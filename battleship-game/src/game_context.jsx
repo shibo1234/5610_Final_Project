@@ -409,13 +409,13 @@ const GameProvider = ({ children }) => {
         if (!game || !currentUser) return;
     
         try {
-        const res = await fetch(`${API_BASE}/api/games/${game._id}/attack`, {
-            method: "POST",
-            credentials: "include",
-            headers: {
-            "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ row, col })
+            const res = await fetch(`${API_BASE}/api/games/${game._id}/attack`, {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ row, col })
         });
     
         if (!res.ok) {
@@ -430,8 +430,8 @@ const GameProvider = ({ children }) => {
         setMyBoard(youAreP1 ? updatedGame.board1 : updatedGame.board2);
         setOppBoard(youAreP1 ? updatedGame.board2 : updatedGame.board1);
         } catch (err) {
-        console.error("handleHit error:", err);
-        setError(err.message);
+            console.error("handleHit error:", err);
+            setError(err.message);
         }
     };
   

@@ -2,18 +2,29 @@ import React, { useContext } from "react";
 import "./board.css";
 import { GameContext } from "../game_context";
 
-function GameBoard({ isPlayer, board, resetGame }) {
-  const { gameStarted, playerTurn, handleAttack } = useContext(GameContext);
+function GameBoard({ isPlayer, board, resetGame, onCellClick }) {
+  // const { gameStarted, playerTurn, handleAttack } = useContext(GameContext);
+
+  // const handleClick = (row, col) => {
+  //   if (
+  //     !isPlayer &&
+  //     playerTurn &&
+  //     gameStarted &&
+  //     board[row][col] !== "X" &&
+  //     board[row][col] !== "H"
+  //   ) {
+  //     handleAttack(row, col);
+  //   }
+  // };
+
+  console.log("👉 onCellClick", onCellClick);
+
 
   const handleClick = (row, col) => {
-    if (
-      !isPlayer &&
-      playerTurn &&
-      gameStarted &&
-      board[row][col] !== "X" &&
-      board[row][col] !== "H"
-    ) {
-      handleAttack(row, col);
+    if (!isPlayer && onCellClick) {
+      onCellClick(row, col); 
+      console.log("Clicked:", row, col);
+      console.log("onCellClick is", typeof onCellClick); 
     }
   };
 

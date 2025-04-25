@@ -1,5 +1,5 @@
 // src/pages/NewGame.jsx
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useContext, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { GameContext } from "../game_context";
 import GameBoard from "../components/game_board.jsx";
@@ -16,15 +16,15 @@ export default function NewGame() {
     error,
     createGame,
     joinGame,
+    handleHit
   } = useContext(GameContext);
+
+  console.log("handleHit", handleHit);
 
   const { gameId } = useParams();
   const navigate = useNavigate();
-  const hasInitialized = useRef(false);
 
   useEffect(() => {
-    if (hasInitialized.current) return;
-
     // 1) Not logged in ⇒ send to login
     if (currentUser === null) {
       navigate("/login");
@@ -33,20 +33,16 @@ export default function NewGame() {
 
     // 2) No gameId and no game yet ⇒ create a new game
     if (!gameId && !game) {
-      hasInitialized.current = true;
       createGame().then((newGame) => {
         // push the new ID into the URL without adding history entries
         navigate(`/game/${newGame._id}`, { replace: true });
-        console.log(currentUser.username, "create ", newGame._id);
       });
       return;
     }
 
     // 3) gameId present and still no game ⇒ join that game
     if (gameId && !game) {
-      hasInitialized.current = true;
       joinGame(gameId).catch(() => {});
-      console.log(currentUser.username, "Joining game", gameId);
     }
   }, [currentUser, gameId, game, navigate, createGame, joinGame]);
 
@@ -104,13 +100,19 @@ export default function NewGame() {
       </h2>
       <div className="game-boards">
         {oppBoard && (
-          <GameBoard board={oppBoard} hideShips className="board-opponent" />
+          <GameBoard 
+            board={oppBoard} 
+            hideShips className="board-opponent" 
+            isPlayer={false}
+            onCellClick={handleHit}
+          />
         )}
         {myBoard && (
           <GameBoard
             board={myBoard}
             hideShips={false}
             className="board-player"
+            isPlayer={true}
           />
         )}
       </div>

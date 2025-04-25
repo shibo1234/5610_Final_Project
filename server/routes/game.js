@@ -67,7 +67,6 @@ router.post("/:gameId/join", isAuthenticated, async (req, res) => {
   try {
     const { gameId } = req.params;
     const user = req.session.user;
-
     const updated = await Game.findByIdAndUpdate(
       gameId,
       {
@@ -78,7 +77,8 @@ router.post("/:gameId/join", isAuthenticated, async (req, res) => {
       },
       { new: true }
     );
-
+    console.log("gameId", gameId)
+    
     if (!updated) {
       return res.status(404).send("Game not found.");
     }
@@ -119,13 +119,13 @@ router.post("/:gameId/attack", isAuthenticated, async (req, res) => {
 
         const cell = targetBoard[row][col];
         if (cell === "H" || cell === "M") {
-        return res.status(400).send("Cell already hit.");
+            return res.status(400).send("Cell already hit.");
         }
 
         if (cell === "S") {
-        targetBoard[row][col] = "H";
+            targetBoard[row][col] = "H";
         } else {
-        targetBoard[row][col] = "M";
+            targetBoard[row][col] = "M";
         }
 
         game[boardKey] = targetBoard;
@@ -146,7 +146,8 @@ router.post("/:gameId/attack", isAuthenticated, async (req, res) => {
       console.error("Hit error:", err);
       res.status(500).send("Failed to place hit.");
     }
-  });
+});
+  
   
 
 module.exports = router;
