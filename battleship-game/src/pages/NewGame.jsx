@@ -19,10 +19,14 @@ export default function NewGame() {
     handleHit
   } = useContext(GameContext);
 
-  console.log("handleHit", handleHit);
-
   const { gameId } = useParams();
   const navigate = useNavigate();
+
+  const isMyTurn =
+  game &&
+  game.turn === (game.player1.id === currentUser.id ? "player1" : "player2");
+
+
 
   useEffect(() => {
     // 1) Not logged in ⇒ send to login
@@ -104,7 +108,7 @@ export default function NewGame() {
             board={oppBoard} 
             hideShips className="board-opponent" 
             isPlayer={false}
-            onCellClick={handleHit}
+            onCellClick={isMyTurn ? handleHit : undefined}
           />
         )}
         {myBoard && (

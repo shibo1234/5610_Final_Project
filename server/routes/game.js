@@ -147,6 +147,17 @@ router.post("/:gameId/attack", isAuthenticated, async (req, res) => {
       res.status(500).send("Failed to place hit.");
     }
 });
+
+router.get("/:gameId", isAuthenticated, async (req, res) => {
+    try {
+      const game = await Game.findById(req.params.gameId);
+      if (!game) return res.status(404).send("Game not found.");
+      res.json(game);
+    } catch (err) {
+      console.error("Fetch game failed:", err);
+      res.status(500).send("Could not fetch game.");
+    }
+});
   
   
 

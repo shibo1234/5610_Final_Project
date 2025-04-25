@@ -111,28 +111,6 @@ const GameProvider = ({ children }) => {
     return () => clearInterval(timer);
   }, [gameStarted, gameOver]);
 
-//   const startGame = () => {
-//     setGameStarted(true);
-//     setPlayerTurn(true);
-//     placeShips();
-//     setElapsedTime(0);
-//     setPlayerShipsDestroyed(0);
-//     setAiShipsDestroyed(0);
-//   };
-
-//   const resetGame = () => {
-//     localStorage.removeItem("battleshipGameState");
-//     setGameOver(false);
-//     setGameStarted(false);
-//     setPlayerBoard(emptyBoard());
-//     setAIBoard(emptyBoard());
-//     setPlayerShips([]);
-//     setAIShips([]);
-//     setElapsedTime(0);
-//     setPlayerShipsDestroyed(0);
-//     setAiShipsDestroyed(0);
-//   };
-
   useEffect(() => {
     if (!gameOver || !currentUser) return;
 
@@ -153,6 +131,32 @@ const GameProvider = ({ children }) => {
       .catch((err) => console.error("Failed to record game:", err));
   }, [gameOver]);
 
+  useEffect(() => {
+    if (!game || game.status !== "Open") return;
+  
+    const interval = setInterval(() => {
+      fetch(`${API_BASE}/api/games/${game._id}`, {
+        credentials: "include",
+      })
+        .then(res => res.json())
+        .then(updated => {
+          if (updated.status === "Active") {
+            setGame(updated);
+            const youAreP1 = updated.player1.id === currentUser.id;
+            setMyBoard(youAreP1 ? updated.board1 : updated.board2);
+            setOppBoard(youAreP1 ? updated.board2 : updated.board1);
+            setWaiting(false); 
+          }
+        })
+        .catch(err => {
+          console.error("Polling error:", err);
+        });
+    }, 2000); 
+  
+    return () => clearInterval(interval);
+  }, [game, currentUser]);
+  
+
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -161,6 +165,7 @@ const GameProvider = ({ children }) => {
       "0"
     )}`;
   };
+  
 
   // ── Multiplayer helpers ─────────────────────────────
   // ── createGame ────────────────────────────────────
@@ -217,171 +222,6 @@ const GameProvider = ({ children }) => {
     }
   };
 
-//   const placeShips = () => {
-//     const placeShipsOnBoard = (board) => {
-//       let ships = [];
-
-//       for (let size of SHIPS_SIZES) {
-//         let placed = false;
-//         while (!placed) {
-//           let row = Math.floor(Math.random() * GRID_SIZE);
-//           let col = Math.floor(Math.random() * GRID_SIZE);
-//           let direction = Math.random() > 0.5 ? "H" : "V";
-
-//           if (canPlaceShip(board, row, col, size, direction)) {
-//             board = applyShipToBoard(board, row, col, size, direction);
-//             ships.push({ row, col, size, direction, hits: 0 });
-//             placed = true;
-//           }
-//         }
-//       }
-
-//       return { board, ships };
-//     };
-
-//     let playerBoard = emptyBoard();
-//     let aiBoard = emptyBoard();
-
-//     const playerPlacement = placeShipsOnBoard(playerBoard);
-//     const aiPlacement = placeShipsOnBoard(aiBoard);
-
-//     setPlayerBoard(playerPlacement.board);
-//     setAIBoard(aiPlacement.board);
-//     setPlayerShips(playerPlacement.ships);
-//     setAIShips(aiPlacement.ships);
-//   };
-
-//   const canPlaceShip = (board, row, col, size, direction) => {
-//     if (direction === "H") {
-//       if (col + size > GRID_SIZE) return false;
-//       for (let i = 0; i < size; i++) {
-//         if (board[row][col + i] !== null) return false;
-//       }
-//     } else {
-//       if (row + size > GRID_SIZE) return false;
-//       for (let i = 0; i < size; i++) {
-//         if (board[row + i][col] !== null) return false;
-//       }
-//     }
-//     return true;
-//   };
-
-//   const applyShipToBoard = (board, row, col, size, direction) => {
-//     let newBoard = board.map((row) => [...row]);
-
-//     for (let i = 0; i < size; i++) {
-//       if (direction === "H") {
-//         newBoard[row][col + i] = "S";
-//       } else {
-//         newBoard[row + i][col] = "S";
-//       }
-//     }
-//     return newBoard;
-//   };
-
-//   const handleAttack = (row, col, isEasyMode = false) => {
-//     if (!playerTurn) {
-//       // console.log("Blocked: Not player's turn");
-//       return;
-//     }
-//     const newAIBoard = aiBoard.map((row) => [...row]);
-//     newAIBoard[row][col] = aiBoard[row][col] === "S" ? "H" : "X";
-//     setAIBoard(newAIBoard);
-
-//     let hitShip = aiShips.find((ship) => {
-//       return (
-//         (ship.direction === "H" &&
-//           ship.row === row &&
-//           ship.col <= col &&
-//           col < ship.col + ship.size) ||
-//         (ship.direction === "V" &&
-//           ship.col === col &&
-//           ship.row <= row &&
-//           row < ship.row + ship.size)
-//       );
-//     });
-
-//     if (hitShip) {
-//       hitShip.hits += 1;
-//     }
-
-//     const isShipDestroyed = hitShip && hitShip.hits >= hitShip.size;
-
-//     if (isShipDestroyed) {
-//       console.log("🚢 AI Ship Destroyed!");
-//       setAiShipsDestroyed((prev) => prev + 1);
-//     }
-
-//     setAIShips([...aiShips]);
-
-//     if (aiShips.every((ship) => ship.hits >= ship.size)) {
-//       setGameOver(true);
-//     }
-
-//     if (!isEasyMode) {
-//       setPlayerTurn(false);
-//       setTimeout(aiAttack, 500);
-//     }
-//     // setTimeout(aiAttack, 500);
-//   };
-
-//   const aiAttack = () => {
-//     let row, col;
-//     do {
-//       row = Math.floor(Math.random() * GRID_SIZE);
-//       col = Math.floor(Math.random() * GRID_SIZE);
-//     } while (playerBoard[row][col] === "X" || playerBoard[row][col] === "H");
-
-//     const newPlayerBoard = playerBoard.map((row) => [...row]);
-//     newPlayerBoard[row][col] = "X";
-//     setPlayerBoard(newPlayerBoard);
-
-//     let hitShip = playerShips.find((ship) => {
-//       return (
-//         (ship.direction === "H" &&
-//           ship.row === row &&
-//           ship.col <= col &&
-//           col < ship.col + ship.size) ||
-//         (ship.direction === "V" &&
-//           ship.col === col &&
-//           ship.row <= row &&
-//           row < ship.row + ship.size)
-//       );
-//     });
-
-//     if (hitShip) {
-//       hitShip = { ...hitShip, hits: hitShip.hits + 1 };
-//       newPlayerBoard[row][col] = "H";
-//     } else {
-//       newPlayerBoard[row][col] = "X";
-//     }
-
-//     setPlayerBoard(newPlayerBoard);
-
-//     const isShipDestroyed = hitShip && hitShip.hits >= hitShip.size;
-//     if (isShipDestroyed) {
-//       console.log("🚢 Player Ship Destroyed!");
-//       setPlayerShipsDestroyed((prev) => prev + 1);
-//     }
-
-//     const updatedPlayerShips = playerShips.map((ship) =>
-//       ship === hitShip ? { ...ship, hits: ship.hits + 1 } : ship
-//     );
-
-//     setPlayerShips(updatedPlayerShips);
-
-//     if (hitShip) {
-//       setPlayerShips(updatedPlayerShips);
-//     }
-
-//     if (updatedPlayerShips.every((ship) => ship.hits >= ship.size)) {
-//       setGameOver(true);
-//       return;
-//     }
-
-//     setPlayerTurn(true);
-//   };
-
     const formattedTime = formatTime(elapsedTime);
 
     const login = (user) => {
@@ -430,6 +270,10 @@ const GameProvider = ({ children }) => {
         setMyBoard(youAreP1 ? updatedGame.board1 : updatedGame.board2);
         setOppBoard(youAreP1 ? updatedGame.board2 : updatedGame.board1);
         } catch (err) {
+            if (err.message === "Not your turn") {
+                alert("⏳ It's not your turn!");
+                return;
+              }
             console.error("handleHit error:", err);
             setError(err.message);
         }
@@ -439,38 +283,6 @@ const GameProvider = ({ children }) => {
   return (
     <GameContext.Provider
       value={{
-        // playerBoard,
-        // setPlayerBoard,
-        // aiBoard,
-        // setAIBoard,
-        // playerShips,
-        // setPlayerShips,
-        // aiShips,
-        // setAIShips,
-        // gameOver,
-        // setGameOver,
-        // gameStarted,
-        // setGameStarted,
-        // playerTurn,
-        // setPlayerTurn,
-        // elapsedTime,
-        // setElapsedTime,
-        // timerRunning,
-        // setTimerRunning,
-
-        // playerShipsDestroyed,
-        // setPlayerShipsDestroyed,
-        // aiShipsDestroyed,
-        // setAiShipsDestroyed,
-
-        // startGame,
-        // resetGame,
-        // formattedTime,
-        // handleAttack,
-        // GRID_SIZE,
-        // SHIPS_SIZES,
-        // emptyBoard,
-
         currentUser,
         login,
         logout,
@@ -489,5 +301,7 @@ const GameProvider = ({ children }) => {
     </GameContext.Provider>
   );
 };
+
+
 
 export { GameContext, GameProvider };
