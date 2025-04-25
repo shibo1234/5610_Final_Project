@@ -48,7 +48,7 @@ app.use("/api", authRoutes);
 app.use("/api/gamesRank", gamesRankRoutes);
 app.use("/api/games", gameRoutes);
 
-const frontendDir = path.join(__dirname, "..", "frontend", "dist");
+const frontendDir = path.join(__dirname, "..", "battleship-game", "dist");
 app.use(express.static(frontendDir));
 
 app.get("*", (req, res) => {
