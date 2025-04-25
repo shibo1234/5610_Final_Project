@@ -12,6 +12,7 @@ const gameRoutes = require("./routes/game");
 
 const app = express();
 
+const isProduction = process.env.NODE_ENV === "production";
 app.set("trust proxy", 1);
 
 mongoose
@@ -24,7 +25,9 @@ mongoose
 
 app.use(
   cors({
-    origin: true,
+    origin: isProduction
+      ? "https://shibozheng-xutan-project3.onrender.com"
+      : "http://localhost:5173",
     credentials: true,
   })
 );
@@ -40,8 +43,8 @@ app.use(
     saveUninitialized: false,
     cookie: {
       maxAge: 24 * 60 * 60 * 1000,
-      sameSite: "none",
-      secure: true,
+      sameSite: isProduction ? "none" : "lax",
+      secure: isProduction,
     },
   })
 );
