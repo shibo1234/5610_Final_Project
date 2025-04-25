@@ -15,7 +15,7 @@ router.post("/register", async (req, res) => {
     req.session.user = { id: user._id, username: user.username };
     res.status(201).json(req.session.user);
   } catch (err) {
-    console.error(" Registration error:", err);
+    console.error("Registration error:", err); // debugging
     res.status(500).send("Registration failed.");
   }
 });
@@ -31,6 +31,7 @@ router.post("/login", async (req, res) => {
     req.session.user = { id: user._id, username: user.username };
     res.json(req.session.user);
   } catch (err) {
+    console.error("Login error:", err); // debugging
     res.status(500).send("Login failed.");
   }
 });
