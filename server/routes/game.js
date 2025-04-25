@@ -99,4 +99,54 @@ router.get("/", async (req, res) => {
   }
 });
 
+// user place attack
+router.post("/:gameId/attack", isAuthenticated, async (req, res) => {
+    try {
+        const { row, col } = req.body;
+        const { gameId } = req.params;
+        const user = req.session.user;
+
+        const game = await Game.findById(gameId);
+        if (!game) return res.status(404).send("Game not found.");
+
+        let isPlayer1 = game.player1.username === user.username;
+        if ((isPlayer1 && game.turn !== "player1") || (!isPlayer1 && game.turn !== "player2")) {
+        return res.status(403).send("Not your turn.");
+        }
+    
+        let boardKey = isPlayer1 ? "board2" : "board1";
+        let targetBoard = game[boardKey];
+
+        const cell = targetBoard[row][col];
+        if (cell === "H" || cell === "M") {
+        return res.status(400).send("Cell already hit.");
+        }
+
+        if (cell === "S") {
+        targetBoard[row][col] = "H";
+        } else {
+        targetBoard[row][col] = "M";
+        }
+
+        game[boardKey] = targetBoard;
+        
+    
+        // no ship left, game over   
+        const isBoardDestroyed = targetBoard.flat().every(cell => cell !== "S");
+        if (isBoardDestroyed) {
+            game.status = "Completed";
+            game.winner = user.username;
+        } else {
+            game.turn = isPlayer1 ? "player2" : "player1";
+        }
+  
+        await game.save();
+        res.status(200).json(game);
+    } catch (err) {
+      console.error("Hit error:", err);
+      res.status(500).send("Failed to place hit.");
+    }
+  });
+  
+
 module.exports = router;

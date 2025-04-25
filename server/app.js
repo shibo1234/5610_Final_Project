@@ -20,14 +20,15 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .then(() => console.log("✅ MongoDB connected"))
+  .then(() => console.log("MongoDB connected"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
 app.use(
   cors({
     origin: isProduction
       ? "https://shibozheng-xutan-project3.onrender.com"
-      : "http://localhost:5173",
+      //   : "http://localhost:5173",
+        : true,
     credentials: true,
   })
 );
