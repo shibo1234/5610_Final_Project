@@ -12,6 +12,8 @@ const gameRoutes = require("./routes/game");
 
 const app = express();
 
+app.set("trust proxy", 1);
+
 mongoose
   .connect(process.env.MONGO_URL, {
     useNewUrlParser: true,
