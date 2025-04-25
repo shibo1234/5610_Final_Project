@@ -38,11 +38,18 @@ const GameProvider = ({ children }) => {
       credentials: "include",
     })
       .then((res) => {
+        console.log("Response from /api/me:", res.status);
         if (!res.ok) throw new Error("not authenticated");
         return res.json();
       })
-      .then((user) => setCurrentUser(user))
-      .catch(() => setCurrentUser(null));
+      .then((user) => {
+        console.log("User restored from session:", user);
+        setCurrentUser(user);
+      })
+      .catch((err) => {
+        console.warn("No session found:", err);
+        setCurrentUser(null);
+      });
   }, []);
 
   useEffect(() => {
